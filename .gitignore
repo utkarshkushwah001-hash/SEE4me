@@ -1,0 +1,36 @@
+# Datasets
+data/raw/
+
+# Outputs
+outputs/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+env/
+app/backend/.venv*/
+models/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+configs/*.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Model artifacts
+models/weights/
+
+# mlflow setup
+configs/mlflow.env
+
+
+# node modules
+app/frontend/node_modules/
+app/frontend/dist/
+app/frontend/.vite/

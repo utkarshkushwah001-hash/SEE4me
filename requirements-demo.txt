@@ -1,0 +1,11 @@
+gradio
+matplotlib
+numpy
+pillow
+torch
+transformers
+python-doctr[torch]
+pyyaml
+edge-tts
+pyttsx3
+wordninja
