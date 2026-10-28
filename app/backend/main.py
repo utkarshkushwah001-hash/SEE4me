@@ -10,6 +10,7 @@ Endpoints:
 
 import base64
 import binascii
+import html
 import io
 import os
 import re
@@ -78,7 +79,7 @@ async def load_pipeline() -> None:
 # Text assembly
 # ---------------------------------------------------------------------------
 def fix_token(token: str) -> str:
-    token = token.strip()
+    token = normalize_ocr_text(token)
     if not token or " " in token:
         return token
     # Very short = acronym (WC, NYC, OK) — don't split
@@ -90,6 +91,16 @@ def fix_token(token: str) -> str:
         # Preserve original casing of the full token on each part
         return " ".join(parts)
     return token
+
+
+def normalize_ocr_text(text: str) -> str:
+    """Normalize OCR output for display and speech without losing word spaces."""
+    if not text:
+        return ""
+    # OCR can emit HTML-escaped punctuation (for example, ``&amp;``).
+    text = html.unescape(text)
+    text = text.replace("\u00a0", " ").replace("\u200b", "")
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def assemble_tokens(tokens: list[str]) -> str:
@@ -128,7 +139,7 @@ def assemble_tokens(tokens: list[str]) -> str:
     if word_buffer:
         segments.append(" ".join(word_buffer))
 
-    return ". ".join(segments)
+    return normalize_ocr_text(". ".join(segments))
 
 
 # ---------------------------------------------------------------------------
@@ -139,6 +150,9 @@ async def synthesize(tokens: list[str]) -> bytes:
     Assemble tokens into natural text then make a single TTS call.
     """
     text = assemble_tokens(tokens)
+    # Ask the voice to pronounce the symbol as a word rather than skipping it.
+    text = re.sub(r"\s*&\s*", " and ", text)
+    text = normalize_ocr_text(text)
     print(f"TTS synthesizing: {text!r}")
     buffer = io.BytesIO()
     communicate = edge_tts.Communicate(text, VOICE)
@@ -228,7 +242,7 @@ async def ocr_image(file: UploadFile = File(...)):
 
     result        = pipeline.run(image)
     tokens, boxes = extract_detections(result["gated_results"])
-    text          = " ".join(tokens)
+    text          = normalize_ocr_text(" ".join(tokens))
 
     audio_b64 = ""
     if tokens:
@@ -261,7 +275,7 @@ async def ocr_image_base64(payload: ImagePayload):
 
     result        = pipeline.run(image)
     tokens, boxes = extract_detections(result["gated_results"])
-    text          = " ".join(tokens)
+    text          = normalize_ocr_text(" ".join(tokens))
 
     audio_b64 = ""
     if tokens:
@@ -311,7 +325,7 @@ async def ocr_stream(websocket: WebSocket):
 
             result        = pipeline.run(image)
             tokens, boxes = extract_detections(result["gated_results"])
-            text          = " ".join(tokens)
+            text          = normalize_ocr_text(" ".join(tokens))
 
             meta = {
                 "n_spoken":   result["n_spoken"],
