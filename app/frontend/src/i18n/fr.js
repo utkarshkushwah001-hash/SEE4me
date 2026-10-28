@@ -1,5 +1,5 @@
 const fr = {
-  appName: "VisionLens",
+  appName: "SEE4me",
   tagline: "Assistant de lecture camera-vers-voix en temps reel",
   apiConnected: "Connectee",
   apiDisconnected: "Hors ligne",
@@ -55,7 +55,7 @@ const fr = {
   about: {
     title: "Assistant de lecture accessible",
     description:
-      "VISION Ai est un assistant OCR en temps reel qui transforme du texte imprime en retour vocal. Il est concu pour aider a acceder rapidement aux panneaux, etiquettes, menus et courtes consignes grace a un flux camera en direct.",
+      "SEE4me est un assistant OCR en temps reel qui transforme du texte imprime en retour vocal. Il est concu pour aider a acceder rapidement aux panneaux, etiquettes, menus et courtes consignes grace a un flux camera en direct.",
     problemTitle: "Pourquoi ce projet",
     problem:
       "Lire du texte imprime au quotidien peut etre lent ou inaccessible quand l'information n'existe qu'en format visuel. Ce projet explore comment la vision par ordinateur, l'OCR et la synthese vocale peuvent reduire cette friction dans une interface simple.",
