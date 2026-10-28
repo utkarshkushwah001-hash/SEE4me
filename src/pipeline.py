@@ -95,7 +95,9 @@ class Pipeline:
 
         self.conf_threshold    = self.cfg["recognition"]["confidence_threshold"]
         self.crop_padding      = self.cfg["recognition"]["crop_padding"]
-        self.max_crops         = self.cfg["recognition"].get("max_crops", 12)
+        # None means process every detected text region. A numeric value can
+        # still be configured for resource-constrained deployments.
+        self.max_crops         = self.cfg["recognition"].get("max_crops")
         self.row_tolerance     = self.cfg["reading_order"]["row_tolerance"]
         self.max_new_tokens    = self.cfg["recognition"]["max_new_tokens"]
         self.budget_s          = self.cfg["latency"]["budget_s"]
@@ -151,8 +153,8 @@ class Pipeline:
         sorted_indices = sort_boxes(boxes, row_tolerance=self.row_tolerance)
         boxes_ordered  = [boxes[i] for i in sorted_indices]
 
-        # ── 4. Cap max crops (Phase 5) — bound worst-case latency ──
-        if len(boxes_ordered) > self.max_crops:
+        # ── 4. Optionally cap crops when a deployment explicitly configures it ──
+        if self.max_crops and len(boxes_ordered) > self.max_crops:
             boxes_ordered = boxes_ordered[:self.max_crops]
 
         # ── 5. Crop ──
