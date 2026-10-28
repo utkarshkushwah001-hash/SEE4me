@@ -11,9 +11,9 @@ detection:
 recognition:
   model: "microsoft/trocr-base-printed"
   max_new_tokens: 32
-  confidence_threshold: 0.75   # gate: below this → silent (validated in Phase 5)
+  confidence_threshold: 0.50   # lower threshold reads more detected words while filtering weak predictions
   crop_padding: 4              # pixels of padding around each detected box
-  max_crops: 12                # Phase 5: cap crops per image to bound worst-case latency
+  max_crops: null              # null reads every detected text region; set a number to cap for constrained devices
 
 reading_order:
   row_tolerance: 0.6           # fraction of median box height for row grouping
